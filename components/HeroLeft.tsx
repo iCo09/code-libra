@@ -35,10 +35,10 @@ export default function HeroLeft() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, ease: 'easeOut' }}
             >
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6 leading-tight">
-                    Compare Your <span className="text-orange-500">Coding Profile</span>.
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground mb-6 leading-tight">
+                    Compare Your <span className="text-muted-foreground">Coding Profile</span>.
                     <br />
-                    Know Your <span className="text-orange-500">Real Value</span>.
+                    Know Your <span className="text-muted-foreground">Real Value</span>.
                 </h1>
             </motion.div>
 
@@ -46,7 +46,7 @@ export default function HeroLeft() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
-                className="text-lg md:text-xl text-zinc-400 mb-8 max-w-lg leading-relaxed"
+                className="text-lg md:text-xl text-muted-foreground mb-8 max-w-lg leading-relaxed"
             >
                 Analyze real LeetCode profiles, compare contest performance, problem-solving depth, and consistency — and see exactly where you stand.
             </motion.p>
@@ -60,12 +60,12 @@ export default function HeroLeft() {
                         transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
                         className="flex items-start space-x-3"
                     >
-                        <div className="p-2 rounded-lg bg-orange-500/10 text-orange-500 mt-1">
+                        <div className="p-2 rounded-lg bg-secondary text-foreground mt-1">
                             <feature.icon size={20} />
                         </div>
                         <div>
-                            <h3 className="font-semibold text-zinc-200">{feature.title}</h3>
-                            <p className="text-sm text-zinc-500 mt-1">{feature.description}</p>
+                            <h3 className="font-semibold text-foreground">{feature.title}</h3>
+                            <p className="text-sm text-muted-foreground mt-1">{feature.description}</p>
                         </div>
                     </motion.div>
                 ))}
@@ -77,14 +77,14 @@ export default function HeroLeft() {
                 transition={{ duration: 0.5, delay: 0.6 }}
                 className="flex flex-col sm:flex-row gap-4"
             >
-                <button className="px-8 py-4 bg-orange-600 hover:bg-orange-500 text-white font-semibold rounded-xl transition-all shadow-lg shadow-orange-900/20 hover:shadow-orange-900/40 flex items-center justify-center gap-2 group">
+                <button className="px-8 py-4 bg-foreground hover:bg-foreground/90 text-background font-semibold rounded-xl transition-all shadow-lg shadow-foreground/5 hover:shadow-foreground/10 flex items-center justify-center gap-2 group">
                     Compare My Profile
                     <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </button>
-                <button className="px-8 py-4 bg-zinc-900/50 hover:bg-zinc-800 text-zinc-300 font-semibold rounded-xl border border-zinc-800 transition-all flex items-center justify-center">
+                <button className="px-8 py-4 bg-card hover:bg-accent text-foreground font-semibold rounded-xl border border-border transition-all flex items-center justify-center">
                     View Sample Comparison
                 </button>
             </motion.div>
-        </div>
+        </div >
     );
 }

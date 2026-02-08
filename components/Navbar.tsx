@@ -28,8 +28,8 @@ const navigationLinks = [
     {
         name: 'Menu',
         items: [
-            { href: '#', label: 'Docs' },
-            { href: '#', label: 'Components', active: true },
+            { href: '/compare-profile', label: 'compare profile', active: true },
+            { href: '/contest-questions', label: 'contest questions' },
             { href: '#', label: 'Blocks' },
             { href: '#', label: 'Starterkits' },
             { href: '#', label: 'Pricing' },
@@ -133,7 +133,7 @@ export function ModeSwitcher() {
     )
 }
 
-/* -------------------------------- Navbar --------------------------------- */
+
 export default function Navbar() {
     return (
         <header className="container mx-auto flex h-14 items-center justify-between gap-4 px-4">
@@ -142,7 +142,7 @@ export default function Navbar() {
 
                 {/* Logo button */}
                 <Link
-                    href="#"
+                    href="/"
                     className={cn(
                         buttonVariants({ variant: 'ghost', size: 'icon' }),
                         'dark:hover:bg-accent text-accent-foreground h-8 w-8 flex items-center justify-center'
