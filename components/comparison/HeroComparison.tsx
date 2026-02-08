@@ -171,15 +171,17 @@ export default function HeroComparison({ userA, userB, onUserUpdate, loadingA, l
 
     // Share Functionality
     const handleShare = async (platform: 'twitter' | 'linkedin' | 'copy') => {
-        const currentUrl = window.location.href;
+        // Create base URL with query parameters
+        const baseUrl = window.location.origin + window.location.pathname;
+        const shareUrl = `${baseUrl}?u1=${encodeURIComponent(userA.username)}&u2=${encodeURIComponent(userB.username)}`;
         const text = `Check out this LeetCode comparison: ${userA.username} vs ${userB.username}! 🚀 #LeetCode #Coding`;
 
         if (platform === 'twitter') {
-            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(currentUrl)}`, '_blank');
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
         } else if (platform === 'linkedin') {
-            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`, '_blank');
+            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`, '_blank');
         } else if (platform === 'copy') {
-            await navigator.clipboard.writeText(currentUrl);
+            await navigator.clipboard.writeText(shareUrl);
             toast.success("Link copied to clipboard!");
         }
     };
@@ -193,9 +195,10 @@ export default function HeroComparison({ userA, userB, onUserUpdate, loadingA, l
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="px-4 py-2 rounded-md cursor-pointer bg-secondary/20 hover:bg-secondary/40 border border-white/10 backdrop-blur-md transition-colors text-muted-foreground hover:text-foreground"
+                            className="px-4 py-2 flex items-center justify-center gap-2 rounded-md cursor-pointer bg-secondary/20 hover:bg-secondary/40 border border-white/10 backdrop-blur-md transition-colors text-muted-foreground hover:text-foreground"
                         >
                             <Share2 className="w-4 h-4 cursor-pointer" />
+                            <span>share</span>
                         </motion.button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48 backdrop-blur-xl bg-black/80 border-white/10">
@@ -302,12 +305,12 @@ export default function HeroComparison({ userA, userB, onUserUpdate, loadingA, l
                         transition={{ delay: 0.3, type: "spring" }}
                         className="relative z-20 -mt-8 flex justify-center items-center"
                     >
-                        <div className="relative w-16 h-16 md:w-24 md:h-24">
+                        <div className="relative w-12 h-12 md:w-16 md:h-16 select-none pointer-events-none">
                             <Image
                                 src="/vs_icon.png"
                                 alt="VS"
                                 fill
-                                className="object-contain drop-shadow-2xl dark:invert"
+                                className="object-contain select-none pointer-events-none drop-shadow-2xl dark:invert"
                                 priority
                             />
                         </div>

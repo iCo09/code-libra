@@ -20,9 +20,9 @@ export default function HeroHeader() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
-                className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground mb-6 leading-tight"
+                className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground mb-6 leading-tight"
             >
-                Transform Your <span className="text-muted-foreground font-serif italic">Coding Journey</span>
+                Track Your <span className="text-muted-foreground font-serif italic">Coding Journey</span>
             </motion.h1>
 
             <motion.p
@@ -31,7 +31,7 @@ export default function HeroHeader() {
                 transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
                 className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl leading-relaxed"
             >
-                Analyze LeetCode profiles, compare contest performance, and visualize your growth with the most advanced analytics dashboard.
+                Analyze Leetcode profiles, filter contest-wise questions, get personalized topic recommendations based on your data. Compare profiles and share your achievements on social media.
             </motion.p>
 
             <motion.div
@@ -45,11 +45,11 @@ export default function HeroHeader() {
                     <div className="relative flex items-center bg-card rounded-lg p-1 pr-1 border border-border">
                         <input
                             type="text"
-                            placeholder="Enter LeetCode Username"
+                            placeholder="Enter leetcode username"
                             className="w-full bg-transparent text-foreground px-4 py-3 outline-none placeholder:text-muted-foreground"
                         />
-                        <button className="bg-foreground hover:bg-foreground/90 text-background font-semibold px-6 py-3 rounded-md transition-colors whitespace-nowrap">
-                            Compare
+                        <button className="bg-foreground cursor-pointer hover:bg-foreground/90 text-background font-semibold px-6 py-3 rounded-md transition-colors whitespace-nowrap">
+                            Get Started
                         </button>
                     </div>
                 </div>

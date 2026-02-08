@@ -19,20 +19,20 @@ import {
     CommandEmpty,
     CommandGroup,
     CommandItem,
-} from '@/components/ui/command'
+} from '@/components/ui/command';
+import { WeightTilde, CircleUser } from 'lucide-react';
 
 import { useTheme } from 'next-themes'
+import { useRouter, usePathname } from 'next/navigation'
 
 /* ------------------ Sample nav (replace with real links) ------------------ */
 const navigationLinks = [
     {
         name: 'Menu',
         items: [
-            { href: '/compare-profile', label: 'compare profile', active: true },
+            { href: '/compare-profile', label: 'compare profile' },
             { href: '/contest-questions', label: 'contest questions' },
-            { href: '#', label: 'Blocks' },
-            { href: '#', label: 'Starterkits' },
-            { href: '#', label: 'Pricing' },
+            { href: '/weekly-goals', label: 'Weekly Goals' },
         ],
     },
 ]
@@ -40,6 +40,12 @@ const navigationLinks = [
 /* -------------------------------- Search --------------------------------- */
 export function Search({ className }: React.ComponentProps<'button'>) {
     const [open, setOpen] = React.useState(false)
+    const router = useRouter()
+
+    const handleNavigation = (href: string) => {
+        setOpen(false)
+        router.push(href)
+    }
 
     React.useEffect(() => {
         const down = (e: KeyboardEvent) => {
@@ -75,9 +81,9 @@ export function Search({ className }: React.ComponentProps<'button'>) {
                 <CommandList>
                     <CommandEmpty>No results found.</CommandEmpty>
                     <CommandGroup heading="Suggestions">
-                        <CommandItem>Calendar</CommandItem>
-                        <CommandItem>Search Emoji</CommandItem>
-                        <CommandItem>Calculator</CommandItem>
+                        <CommandItem onSelect={() => handleNavigation('/compare-profile')}>compare profile</CommandItem>
+                        <CommandItem onSelect={() => handleNavigation('/contest-questions')}>contest questions</CommandItem>
+                        <CommandItem onSelect={() => handleNavigation('/weekly-goals')}>Weekly Goals</CommandItem>
                     </CommandGroup>
                 </CommandList>
             </CommandDialog>
@@ -135,6 +141,8 @@ export function ModeSwitcher() {
 
 
 export default function Navbar() {
+    const pathname = usePathname();
+
     return (
         <header className="container mx-auto flex h-14 items-center justify-between gap-4 px-4">
             <div className="flex items-center justify-start gap-2 md:flex-1 md:gap-4">
@@ -149,10 +157,7 @@ export default function Navbar() {
                     )}
                     aria-label="Home"
                 >
-                    <svg viewBox="0 0 40 40" fill="currentColor" className="h-6 w-6" aria-hidden>
-                        <path d="M11.77 21.83 7.42 20.49c-2.42-.49-2.42-.49-1.79-2.62l3.15-3.88c.63-.77 1.57-1.23 2.56-1.23h6.93" />
-                        <path d="M12.5 23l-1.5-2.5c0-.4 5-7.5 9-7.5 2.17 1.83 6.12 3.47 7 7 .5 2-5 6.17-8 8.5L12.5 23z" />
-                    </svg>
+                    <WeightTilde className="h-6 w-6" />
                 </Link>
 
                 <Search className="mr-2 hidden md:flex" />
@@ -161,38 +166,37 @@ export default function Navbar() {
             <div className="flex items-center justify-end gap-2">
                 <NavigationMenu className="max-md:hidden">
                     <NavigationMenuList className="flex items-center gap-1">
-                        {navigationLinks[0].items.map((link, index) => (
-                            <NavigationMenuItem key={index}>
-                                <NavigationMenuLink asChild>
-                                    <Link
-                                        href={link.href}
-                                        data-active={link.active ? 'true' : undefined}
-                                        className={cn(
-                                            'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
-                                            link.active ? 'text-accent-foreground' : 'text-foreground/60 hover:text-foreground'
-                                        )}
-                                    >
-                                        {link.label}
-                                    </Link>
-                                </NavigationMenuLink>
-                            </NavigationMenuItem>
-                        ))}
+                        {navigationLinks[0].items.map((link, index) => {
+                            const isActive = pathname === link.href || (pathname === '/' && link.href === '/compare-profile');
+                            return (
+                                <NavigationMenuItem key={index}>
+                                    <NavigationMenuLink asChild>
+                                        <Link
+                                            href={link.href}
+                                            data-active={isActive ? 'true' : undefined}
+                                            className={cn(
+                                                'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+                                                isActive ? 'text-accent-foreground' : 'text-foreground/60 hover:text-foreground'
+                                            )}
+                                        >
+                                            {link.label}
+                                        </Link>
+                                    </NavigationMenuLink>
+                                </NavigationMenuItem>
+                            );
+                        })}
                     </NavigationMenuList>
                 </NavigationMenu>
 
                 <Separator orientation="vertical" className="hidden md:flex data-[orientation=vertical]:h-5" />
 
-                {/* Action button (phone/contacts icon placeholder) */}
+                {/* User profile or login button */}
                 <Link
                     href="#"
                     className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'h-8 w-8 flex items-center justify-center')}
-                    aria-label="Contact"
+                    aria-label="Profile"
                 >
-                    <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5" aria-hidden>
-                        <path d="M21 16.5v2a2 2 0 0 1-2 2h-2.5a.5.5 0 0 1-.5-.5V18a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1z" />
-                        <path d="M3 7a4 4 0 0 1 4-4h1v2H7a2 2 0 0 0-2 2v8h2V7z" />
-                        <path d="M8 11h8v2H8z" />
-                    </svg>
+                    <CircleUser className="h-5 w-5" />
                 </Link>
 
                 <Separator orientation="vertical" className="hidden md:flex data-[orientation=vertical]:h-5" />
