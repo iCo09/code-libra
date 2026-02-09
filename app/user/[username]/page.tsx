@@ -11,13 +11,14 @@ import ProfileHeatmap, { ColorTheme } from '@/components/profile/ProfileHeatmap'
 import ContestGraph from '@/components/comparison/ContestGraph';
 import LanguageStats from '@/components/comparison/LanguageStats';
 import { Badge } from '@/components/ui/badge';
-import { Trophy, TrendingUp, Target, Award } from 'lucide-react';
+import { Trophy, TrendingUp, Target, Award, Flame } from 'lucide-react';
 import { getUserProfile } from '@/actions/get-user-profile';
 import { getUserTotalActiveDays } from '@/actions/get-user-calendar';
 import { getUserContest } from '@/actions/get-user-contest';
 import { getUserStats } from '@/actions/get-user-stats';
 import { getUserBadges } from '@/actions/get-user-badges';
 import { getUserLanguageStats } from '@/actions/get-user-language';
+import { getDailyQuestion, DailyQuestion } from '@/actions/get-daily-question';
 //@ts-ignore
 import { toast } from 'sonner';
 
@@ -64,6 +65,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
     const [user, setUser] = useState<DetailedUserProfile>(createDefaultProfile(username));
     const [loading, setLoading] = useState(true);
     const [colorTheme, setColorTheme] = useState<ColorTheme>('green');
+    const [dailyQuestion, setDailyQuestion] = useState<DailyQuestion | null>(null);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -144,6 +146,19 @@ export default function ProfilePage({ params }: ProfilePageProps) {
         fetchUserData();
     }, [username]);
 
+    useEffect(() => {
+        const fetchDailyQuestion = async () => {
+            try {
+                const data = await getDailyQuestion();
+                setDailyQuestion(data);
+            } catch (error: any) {
+                console.error('Failed to fetch daily question:', error);
+            }
+        };
+
+        fetchDailyQuestion();
+    }, []);
+
     return (
         <div className="min-h-screen bg-background text-foreground px-6">
             <div className="max-w-7xl mx-auto px-4 py-2">
@@ -157,10 +172,10 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                     {/* Right Panel - Main Content - Prioritized Sections */}
                     <div className="space-y-4 p-2 border-1">
                         {/* Top Summary Strip - Compact */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 border-1 border-border/50">
+                        <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 border-1 border-border/50">
                             <SummaryCard
                                 title="Rating"
-                                value={user.contestRating}
+                                value={user.contestRating.toFixed(1)}
                                 subtitle={user.level !== "None" ? user.level : undefined}
                                 icon={Trophy}
                                 iconColor="text-yellow-500"
@@ -187,7 +202,42 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                                 subtitle={user.contestTopPercentage ? `Top ${user.contestTopPercentage.toFixed(1)}%` : undefined}
                                 icon={Award}
                                 iconColor="text-purple-500"
+                                className='border-r-1'
                             />
+
+
+                            {/* POTD */}
+                            <div className="relative p-2 transition-all shadow-sm">
+                                <div className="flex items-start justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <div className="p-2 rounded-lg bg-background/50 text-yellow-500">
+                                            <Flame className="w-4 h-4" />
+                                        </div>
+                                        <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+                                            POTD
+                                        </span>
+                                        {dailyQuestion && (
+                                            <div className="group relative">
+                                                <a
+                                                    href={dailyQuestion.questionLink}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className={`text-md font-bold tabular-nums hover:underline ${dailyQuestion.difficulty === 'Easy' ? 'text-green-500' :
+                                                        dailyQuestion.difficulty === 'Medium' ? 'text-yellow-500' :
+                                                            'text-red-500'
+                                                        }`}
+                                                >
+                                                    {dailyQuestion.questionFrontendId}
+                                                </a>
+                                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-popover text-popover-foreground text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 border border-border">
+                                                    {dailyQuestion.questionTitle}
+                                                    <div className="text-[10px] text-muted-foreground mt-0.5">{dailyQuestion.difficulty}</div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         {/* PRIORITY 1: Activity & Consistency Heatmap */}
