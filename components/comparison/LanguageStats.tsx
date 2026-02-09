@@ -21,9 +21,10 @@ interface LanguageStatsProps {
     singleUser?: boolean;
     variant?: 'list' | 'radar' | 'auto';
     colorTheme?: ColorTheme;
+    hideUsername?: boolean; // Hide usernames from legend (for profile pages)
 }
 
-export default function LanguageStats({ userA, userB, singleUser = false, variant = 'auto', colorTheme }: LanguageStatsProps) {
+export default function LanguageStats({ userA, userB, singleUser = false, variant = 'auto', colorTheme, hideUsername = false }: LanguageStatsProps) {
     // Get theme color hex
     const themeColor = useMemo(() => {
         if (!colorTheme) return "#3b82f6"; // Default blue
@@ -122,7 +123,7 @@ export default function LanguageStats({ userA, userB, singleUser = false, varian
                                     fillOpacity={0.1}
                                 />
                             )}
-                            <Legend />
+                            {!hideUsername && <Legend />}
                             <Tooltip
                                 contentStyle={{ backgroundColor: 'var(--background)', border: '1px solid var(--border)' }}
                                 itemStyle={{ fontSize: '12px', color: 'var(--foreground)' }}

@@ -15,7 +15,6 @@ import { getUserStats } from '@/actions/get-user-stats';
 //@ts-ignore
 import { toast } from "sonner";
 import { getUserSkills, UserSkills } from '@/actions/get-user-skills';
-import SkillComparison from '@/components/comparison/SkillComparison';
 import BadgeComparison from '@/components/comparison/BadgeComparison';
 import { getUserBadges } from '@/actions/get-user-badges';
 import { getUserLanguageStats } from '@/actions/get-user-language';

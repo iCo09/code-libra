@@ -18,9 +18,10 @@ interface ContestGraphProps {
     userB?: DetailedUserProfile; // Optional for single-user mode
     singleUser?: boolean;
     colorTheme?: ColorTheme;
+    hideUsername?: boolean; // Hide usernames from legend (for profile pages)
 }
 
-export default function ContestGraph({ userA, userB, singleUser = false, colorTheme }: ContestGraphProps) {
+export default function ContestGraph({ userA, userB, singleUser = false, colorTheme, hideUsername = false }: ContestGraphProps) {
     // Get theme color hex
     const themeColor = useMemo(() => {
         if (!colorTheme) return "#3b82f6"; // Default blue
@@ -91,7 +92,7 @@ export default function ContestGraph({ userA, userB, singleUser = false, colorTh
                             itemStyle={{ fontSize: '12px', color: 'var(--foreground)' }}
                             labelStyle={{ color: 'var(--muted-foreground)', fontSize: '12px', marginBottom: '4px' }}
                         />
-                        <Legend iconType="circle" />
+                        {!hideUsername && <Legend iconType="circle" />}
                         <Line
                             type="monotone"
                             dataKey="ratingA"
