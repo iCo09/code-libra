@@ -1,16 +1,12 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { DetailedUserProfile, DEFAULT_USERNAME_A } from '@/lib/mock-data';
+import { DetailedUserProfile } from '@/lib/mock-data';
 import ProfileSidebar from '@/components/profile/ProfileSidebar';
 import SummaryCard from '@/components/profile/SummaryCard';
-import RatingMiniGraph from '@/components/profile/RatingMiniGraph';
-import BadgesSection from '@/components/profile/BadgesSection';
-import ActivityFeed from '@/components/profile/ActivityFeed';
 import ProfileHeatmap, { ColorTheme } from '@/components/profile/ProfileHeatmap';
 import ContestGraph from '@/components/comparison/ContestGraph';
 import LanguageStats from '@/components/comparison/LanguageStats';
-import { Badge } from '@/components/ui/badge';
 import { Trophy, TrendingUp, Target, Award, Flame } from 'lucide-react';
 import { getUserProfile } from '@/actions/get-user-profile';
 import { getUserTotalActiveDays } from '@/actions/get-user-calendar';
@@ -19,6 +15,8 @@ import { getUserStats } from '@/actions/get-user-stats';
 import { getUserBadges } from '@/actions/get-user-badges';
 import { getUserLanguageStats } from '@/actions/get-user-language';
 import { getDailyQuestion, DailyQuestion } from '@/actions/get-daily-question';
+import { getUserScore } from '@/actions/get-user-score';
+import { UserScoreResult } from '@/lib/calculate-user-score';
 //@ts-ignore
 import { toast } from 'sonner';
 
@@ -66,18 +64,20 @@ export default function ProfilePage({ params }: ProfilePageProps) {
     const [loading, setLoading] = useState(true);
     const [colorTheme, setColorTheme] = useState<ColorTheme>('green');
     const [dailyQuestion, setDailyQuestion] = useState<DailyQuestion | null>(null);
+    const [userScore, setUserScore] = useState<UserScoreResult | null>(null);
 
     useEffect(() => {
         const fetchUserData = async () => {
             setLoading(true);
             try {
-                const [profileData, statsData, contestData, calendarAggregated, badgesData, languageData] = await Promise.all([
+                const [profileData, statsData, contestData, calendarAggregated, badgesData, languageData, scoreData] = await Promise.all([
                     getUserProfile(username),
                     getUserStats(username),
                     getUserContest(username),
                     getUserTotalActiveDays(username),
                     getUserBadges(username),
-                    getUserLanguageStats(username)
+                    getUserLanguageStats(username),
+                    getUserScore(username)
                 ]);
 
                 setUser({
@@ -135,6 +135,8 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                     strengths: [],
                     badgesData: badgesData
                 });
+                // Set user score
+                setUserScore(scoreData);
             } catch (error: any) {
                 console.error(error);
                 toast.error(`Failed to fetch profile: ${error.message}`);
@@ -166,7 +168,7 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-[25%_75%] gap-4">
                     {/* Left Sidebar - Sticky & Compact */}
                     <div className="lg:sticky lg:top-4 lg:self-start border-1 p-2">
-                        <ProfileSidebar user={user} />
+                        <ProfileSidebar user={user} score={userScore?.totalScore} />
                     </div>
 
                     {/* Right Panel - Main Content - Prioritized Sections */}
@@ -249,13 +251,13 @@ export default function ProfilePage({ params }: ProfilePageProps) {
                             {/* PRIORITY 2: Rating History Graph */}
                             <div className="border-1 border-border/50 p-2">
                                 <h3 className="text-base font-medium text-foreground mb-3">Rating History</h3>
-                                <ContestGraph userA={user} singleUser={true} colorTheme={colorTheme} />
+                                <ContestGraph userA={user} singleUser={true} colorTheme={colorTheme} hideUsername={true} />
                             </div>
 
                             {/* Secondary: Language Stats */}
                             <div className="border-1 border-border/50 p-2">
                                 <h3 className="text-base font-medium text-foreground mb-3">Languages</h3>
-                                <LanguageStats userA={user} singleUser={true} variant="radar" colorTheme={colorTheme} />
+                                <LanguageStats userA={user} singleUser={true} variant="radar" colorTheme={colorTheme} hideUsername={true} />
                             </div>
                         </div>
                     </div>

@@ -4,7 +4,7 @@ import { DetailedUserProfile } from '@/lib/mock-data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, GitCompare, Share2, Github, Twitter, Linkedin, Globe, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Edit, GitCompare, Share2, Github, Twitter, Linkedin, Globe, CheckCircle2, ChevronDown, ChevronUp, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import Image from 'next/image';
@@ -12,6 +12,7 @@ import type { Badge as BadgeType } from '@/actions/get-user-badges';
 
 interface ProfileSidebarProps {
     user: DetailedUserProfile;
+    score?: number | null;
 }
 
 const getCountryCode = (countryName: string) => {
@@ -36,7 +37,7 @@ const getCountryCode = (countryName: string) => {
     return map[countryName] || "un";
 };
 
-export default function ProfileSidebar({ user }: ProfileSidebarProps) {
+export default function ProfileSidebar({ user, score }: ProfileSidebarProps) {
     const getIconUrl = (iconPath: string) => iconPath.startsWith('http') ? iconPath : `https://leetcode.com${iconPath}`;
     const activeBadge = user.badgesData?.activeBadge;
     const badges = user.badgesData?.badges || [];
@@ -88,22 +89,22 @@ export default function ProfileSidebar({ user }: ProfileSidebarProps) {
                                     )}
                                 </div>
                                 {user.gitHub && (
-                                    <a href={user.gitHub} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">
+                                    <a href={user.gitHub} target="_blank" rel="noreferrer" className="text-foreground hover:opacity-70 transition-opacity">
                                         <Github className="w-5 h-5" />
                                     </a>
                                 )}
                                 {user.twitter && (
-                                    <a href={user.twitter} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-[#1DA1F2] transition-colors">
+                                    <a href={user.twitter} target="_blank" rel="noreferrer" className="text-[#1DA1F2] hover:opacity-70 transition-opacity">
                                         <Twitter className="w-5 h-5" />
                                     </a>
                                 )}
                                 {user.linkedIN && (
-                                    <a href={user.linkedIN} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-[#0A66C2] transition-colors">
+                                    <a href={user.linkedIN} target="_blank" rel="noreferrer" className="text-[#0A66C2] hover:opacity-70 transition-opacity">
                                         <Linkedin className="w-5 h-5" />
                                     </a>
                                 )}
                                 {user.website && user.website.length > 0 && (
-                                    <a href={user.website[0]} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-emerald-500 transition-colors">
+                                    <a href={user.website[0]} target="_blank" rel="noreferrer" className="text-emerald-500 hover:opacity-70 transition-opacity">
                                         <Globe className="w-5 h-5" />
                                     </a>
                                 )}
@@ -112,6 +113,67 @@ export default function ProfileSidebar({ user }: ProfileSidebarProps) {
                     )}
                 </div>
             </div>
+
+            {/* Score Badge */}
+            {score !== null && score !== undefined && (
+                <div className="p-4 border-1 border-border/30">
+                    <div className="flex items-center justify-between">
+                        <div className="flex flex-col gap-1">
+                            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider flex gap-2 items-center">
+                                <span>Profile Score</span>
+                                <span className="relative group cursor-help">
+                                    <Info className="w-3 h-3" />
+                                    {/* Tooltip */}
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-popover text-popover-foreground text-[10px] rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 border border-border w-64">
+                                        <div className="font-semibold mb-1">Score Components (0-1000)</div>
+                                        <div className="space-y-0.5 text-left">
+                                            <div>• Problem Solving: 400pts</div>
+                                            <div>• Topic Coverage: 200pts</div>
+                                            <div>• Contest Performance: 200pts</div>
+                                            <div>• Consistency: 100pts</div>
+                                            <div>• Advanced Topics: 100pts</div>
+                                        </div>
+                                        <div className="mt-1.5 pt-1.5 border-t border-border/50">
+                                            <div className="font-semibold mb-0.5">Rank Tiers</div>
+                                            <div className="grid grid-cols-2 gap-x-2 text-[9px]">
+                                                <div className={score <= 200 ? 'text-gray-500 font-semibold' : ''}>0-200: Init</div>
+                                                <div className={score > 200 && score <= 400 ? 'text-blue-500 font-semibold' : ''}>201-400: Loop</div>
+                                                <div className={score > 400 && score <= 600 ? 'text-purple-500 font-semibold' : ''}>401-600: Optimize</div>
+                                                <div className={score > 600 && score <= 800 ? 'text-orange-500 font-semibold' : ''}>601-800: Compile</div>
+                                                <div className={score > 800 ? 'text-yellow-500 font-semibold' : ''}>801-1000: Execute</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </span>
+                            </span>
+                            <div className="flex items-baseline gap-2">
+                                <span className={`text-3xl font-bold ${score >= 801 ? 'text-yellow-500' :
+                                    score >= 601 ? 'text-orange-500' :
+                                        score >= 401 ? 'text-purple-500' :
+                                            score >= 201 ? 'text-blue-500' :
+                                                'text-gray-500'
+                                    }`}>
+                                    {score}
+                                </span>
+                            </div>
+                        </div>
+                        <div className={`px-4 py-2 font-semibold text-sm ${score >= 801 ? 'bg-yellow-500/10 text-yellow-500' :
+                            score >= 601 ? 'bg-orange-500/10 text-orange-500' :
+                                score >= 401 ? 'bg-purple-500/10 text-purple-500' :
+                                    score >= 201 ? 'bg-blue-500/10 text-blue-500' :
+                                        'bg-gray-500/10 text-gray-500'
+                            }`}>
+                            {
+                                score >= 801 ? 'Execute' :
+                                    score >= 601 ? 'Compile' :
+                                        score >= 401 ? 'Optimize' :
+                                            score >= 201 ? 'Loop' :
+                                                'Init'
+                            }
+                        </div>
+                    </div>
+                </div>
+            )}
 
 
             <div className="flex items-center justify-between gap-4 p-2 border-1 border-border/30">
