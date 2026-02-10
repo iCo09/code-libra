@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ContestQuestion } from '@/actions/get-contest-questions';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,7 @@ export default function ContestQuestionsTable({ questions }: ContestQuestionsTab
     const [sortField, setSortField] = useState<SortField>('rating');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
     const [currentPage, setCurrentPage] = useState(1);
+    const [isAnimating, setIsAnimating] = useState(false);
 
     // Filters
     const [selectedProblemIndices, setSelectedProblemIndices] = useState<string[]>([]);
@@ -240,22 +242,30 @@ export default function ContestQuestionsTable({ questions }: ContestQuestionsTab
                         type="number"
                         placeholder="Min"
                         value={minRating}
+                        min="0"
                         onChange={(e) => {
-                            setMinRating(e.target.value);
-                            setCurrentPage(1);
+                            const value = e.target.value;
+                            if (value === '' || parseFloat(value) >= 0) {
+                                setMinRating(value);
+                                setCurrentPage(1);
+                            }
                         }}
-                        className="bg-secondary/50 border-border h-9 w-[90px]"
+                        className="bg-secondary/50 border-border h-9 w-[90px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <span className="text-muted-foreground text-sm">-</span>
                     <Input
                         type="number"
                         placeholder="Max"
                         value={maxRating}
+                        min="0"
                         onChange={(e) => {
-                            setMaxRating(e.target.value);
-                            setCurrentPage(1);
+                            const value = e.target.value;
+                            if (value === '' || parseFloat(value) >= 0) {
+                                setMaxRating(value);
+                                setCurrentPage(1);
+                            }
                         }}
-                        className="bg-secondary/50 border-border h-9 w-[90px]"
+                        className="bg-secondary/50 border-border h-9 w-[90px] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                 </div>
 
@@ -284,7 +294,7 @@ export default function ContestQuestionsTable({ questions }: ContestQuestionsTab
                 )}
             </div>
 
-            {/* Table */}
+            {/* Table with Shutter Animation */}
             <div className="rounded-lg border border-border overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full">
@@ -337,43 +347,59 @@ export default function ContestQuestionsTable({ questions }: ContestQuestionsTab
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-border">
-                            {paginatedQuestions.length === 0 ? (
-                                <tr>
-                                    <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
-                                        No questions found matching your filters.
-                                    </td>
-                                </tr>
-                            ) : (
-                                paginatedQuestions.map((question) => (
-                                    <tr
-                                        key={question.id}
-                                        className="hover:bg-secondary/30 transition-colors"
-                                    >
-                                        <td className="px-4 py-3 text-sm font-mono">{question.id}</td>
-                                        <td className="px-4 py-3 text-sm">
-                                            <a
-                                                href={`https://leetcode.com/problems/${question.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}/`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="hover:text-primary hover:underline transition-colors"
-                                            >
-                                                {question.title}
-                                            </a>
-                                        </td>
-                                        <td className="px-4 py-3 text-sm text-muted-foreground">
-                                            {question.contestName}
-                                        </td>
-                                        <td className="px-4 py-3 text-sm font-mono text-muted-foreground">
-                                            {question.problemIndex}
-                                        </td>
-                                        <td className={`px-4 py-3 text-sm font-mono ${getRatingColor(question.rating)}`}>
-                                            {Math.round(question.rating)}
+                        <AnimatePresence mode="wait">
+                            <motion.tbody
+                                key={currentPage}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="divide-y divide-border"
+                            >
+                                {paginatedQuestions.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                                            No questions found matching your filters.
                                         </td>
                                     </tr>
-                                ))
-                            )}
-                        </tbody>
+                                ) : (
+                                    paginatedQuestions.map((question, index) => (
+                                        <motion.tr
+                                            key={question.id}
+                                            initial={{ opacity: 0, y: -20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{
+                                                duration: 0.3,
+                                                delay: index * 0.05,
+                                                ease: "easeOut"
+                                            }}
+                                            className="hover:bg-secondary/30 transition-colors"
+                                        >
+                                            <td className="px-4 py-3 text-sm font-mono">{question.id}</td>
+                                            <td className="px-4 py-3 text-sm">
+                                                <a
+                                                    href={`https://leetcode.com/problems/${question.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}/`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="hover:text-primary hover:underline transition-colors"
+                                                >
+                                                    {question.title}
+                                                </a>
+                                            </td>
+                                            <td className="px-4 py-3 text-sm text-muted-foreground">
+                                                {question.contestName}
+                                            </td>
+                                            <td className="px-4 py-3 text-sm font-mono text-muted-foreground">
+                                                {question.problemIndex}
+                                            </td>
+                                            <td className={`px-4 py-3 text-sm font-mono ${getRatingColor(question.rating)}`}>
+                                                {Math.round(question.rating)}
+                                            </td>
+                                        </motion.tr>
+                                    ))
+                                )}
+                            </motion.tbody>
+                        </AnimatePresence>
                     </table>
                 </div>
             </div>
